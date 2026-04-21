@@ -37,9 +37,8 @@ npm install
 # 3. Configure environment
 cp .env.example .env
 
-# 4. Run database migrations and generate Prisma client
+# 4. Run database migrations (Prisma client is generated automatically via postinstall)
 npx prisma migrate dev
-npx prisma generate
 
 # 5. Start the development server
 npm run dev
@@ -91,6 +90,22 @@ See [ai-notes/decisions.md](ai-notes/decisions.md) for a full breakdown. Key cho
 - **Email + httpOnly cookie** over NextAuth/JWT — no additional libraries, works with Next.js server components
 - **`invitesSent` counter on User** over a separate invite table — avoids join complexity; button click is a reliable enough signal for a prototype
 - **Metrics computed on demand** — a single `COUNT` query is instant at this scale
+
+## Deploying to Vercel (with Turso)
+
+1. Create a free database at [turso.tech](https://turso.tech)
+2. Set these environment variables in Vercel → Settings → Environment Variables:
+   - `DATABASE_URL` → `libsql://<database>.<org>.turso.io`
+   - `DATABASE_AUTH_TOKEN` → your token from the Turso dashboard
+3. Apply the schema to Turso once via the Turso CLI:
+   ```bash
+   turso db shell <database-name> < prisma/migrations/20260420222919_init/migration.sql
+   ```
+4. Deploy — Prisma client is generated automatically during build via `postinstall`
+
+> **Note:** Prisma 7's migration engine does not support the `libsql://` scheme, so `prisma migrate deploy` cannot be used in the build step. Schema changes must be applied to Turso manually using the Turso CLI or dashboard.
+
+---
 
 ## Trade-offs
 
