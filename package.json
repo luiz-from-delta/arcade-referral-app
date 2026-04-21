@@ -8,12 +8,14 @@
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@libsql/client": "^0.17.2",
     "@prisma/adapter-libsql": "^7.7.0",
     "@prisma/client": "^7.7.0",
+    "dotenv": "^17.4.2",
     "nanoid": "^5.1.9",
     "next": "16.2.4",
     "prisma": "^7.7.0",

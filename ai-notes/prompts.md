@@ -73,3 +73,27 @@ Chronological log of prompts submitted to Claude Code during this project.
 **Prompt:** Add a script for running test coverage.
 
 **Outcome:** Added `"test:coverage": "jest --coverage"` to `package.json`. Running it reports 100% statement, branch, function, and line coverage on `lib/referral.ts`.
+
+---
+
+## 10. Post-Implementation Review and Improvements
+
+**Prompt:** Review the project for UX, marketing, and test gaps. Specific observations: display who referred the user, fix the conversion rate format, update the invite count instantly after copying the link, and identify anything else worth improving.
+
+**Outcome:** Six improvements identified and implemented in a single `feat/improvements` scope:
+1. Referrer email displayed on the dashboard, sourced from `getSession()` with no extra page-level query
+2. Conversion rate uses `toFixed(1)` and shows "—" when no invites have been sent (avoids misleading "0%")
+3. `CopyLinkButton` calls `router.refresh()` after POST for an instant invite count update
+4. Landing page (`/`) redirects authenticated users to `/dashboard` via a server component
+5. `dotenv` added as a dependency (was imported in `prisma.config.ts` but missing from `package.json`)
+6. `postinstall` script added to run `prisma generate` automatically after `npm install`
+
+Additionally, 5 signup route tests were added covering: missing email, duplicate email, valid referrer resolution, invalid referrer handling, and email normalization.
+
+---
+
+## 11. Referrer Email — Avoid Extra Page-Level Query
+
+**Prompt:** Why not get the referrer info in `getSession()` and remove the need for an additional call at the page level?
+
+**Outcome:** `getSession()` updated to look up the referrer's email alongside the session user and return it as `referrerEmail`. The dashboard accesses `user.referrerEmail` directly with no additional database call.

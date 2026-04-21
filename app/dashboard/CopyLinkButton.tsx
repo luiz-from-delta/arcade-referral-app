@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CopyLinkButton({ referralUrl }: { referralUrl: string }) {
+  const router = useRouter();
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
@@ -11,6 +13,7 @@ export default function CopyLinkButton({ referralUrl }: { referralUrl: string })
     setTimeout(() => setCopied(false), 2000);
 
     await fetch("/api/users/me/invite", { method: "POST" });
+    router.refresh();
   }
 
   return (
