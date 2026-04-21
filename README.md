@@ -97,11 +97,20 @@ See [ai-notes/decisions.md](ai-notes/decisions.md) for a full breakdown. Key cho
 2. Set these environment variables in Vercel → Settings → Environment Variables:
    - `DATABASE_URL` → `libsql://<database>.<org>.turso.io`
    - `DATABASE_AUTH_TOKEN` → your token from the Turso dashboard
-3. Apply the schema to Turso once via the Turso CLI:
+3. Install the Turso CLI if you don't have it:
    ```bash
+   # macOS (Homebrew)
+   brew install tursodatabase/tap/turso
+
+   # macOS / Linux (without Homebrew)
+   curl -sSfL https://get.tur.so/install.sh | bash
+   ```
+4. Apply the schema to Turso once:
+   ```bash
+   turso auth login
    turso db shell <database-name> < prisma/migrations/20260420222919_init/migration.sql
    ```
-4. Deploy — Prisma client is generated automatically during build via `postinstall`
+5. Deploy — Prisma client is generated automatically during build via `postinstall`
 
 > **Note:** Prisma 7's migration engine does not support the `libsql://` scheme, so `prisma migrate deploy` cannot be used in the build step. Schema changes must be applied to Turso manually using the Turso CLI or dashboard.
 
