@@ -73,3 +73,33 @@ Key architectural decisions made during this project, including the rationale an
 **Decision:** `.nvmrc` set to `22`.
 
 **Why:** Prisma 7 and `@prisma/client` require Node.js ≥ 20.19. The project was initially running on Node 18.16, which caused install failures. Pinning to 22 ensures consistent behavior across environments.
+
+---
+
+## Referrer Email: Fetched in `getSession()`, Not at the Page Level
+
+**Decision:** `getSession()` in `lib/session.ts` looks up the referrer's email in the same function call and returns it as `referrerEmail` alongside the user object.
+
+**Rejected:** Fetching the referrer with a separate `db.user.findUnique` call directly in the dashboard server component.
+
+**Why:** Centralising the lookup in `getSession()` keeps the page component clean, avoids duplicating the lookup logic if other pages ever need it, and makes the data dependency explicit at the session boundary rather than scattered across consumers.
+
+---
+
+## Instant Invite Count: `router.refresh()` vs. Optimistic UI
+
+**Decision:** After `POST /api/users/me/invite` resolves, `CopyLinkButton` calls `router.refresh()` to re-render the dashboard server component with fresh data from the database.
+
+**Rejected:** Maintaining a local React state counter as an optimistic update.
+
+**Why:** `router.refresh()` is the idiomatic App Router approach — it re-fetches server component data without a full page reload and keeps the client free of derived state. The POST round-trip is fast enough that the delay is imperceptible.
+
+---
+
+## Authenticated Redirect: Server Component Wrapper
+
+**Decision:** `app/page.tsx` is a server component that calls `getSession()` and redirects to `/dashboard` if a session exists, rendering `<AuthForm />` otherwise. The form logic lives in `app/AuthForm.tsx` as a client component.
+
+**Rejected:** Handling the redirect inside the client component with `useEffect`.
+
+**Why:** A server-side redirect via `redirect()` is instant and prevents any flash of the auth form for logged-in users. A `useEffect` approach would briefly render the form before redirecting, which is poor UX.
