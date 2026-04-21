@@ -16,6 +16,8 @@ export default async function DashboardPage() {
   const protocol = host.startsWith("localhost") ? "http" : "https";
   const referralUrl = `${protocol}://${host}/?ref=${user.referralCode}`;
 
+  const rateDisplay = invitesSent === 0 ? "—" : `${(rate * 100).toFixed(1)}%`;
+
   return (
     <div className="flex min-h-screen items-start justify-center bg-zinc-50 px-4 py-16">
       <div className="w-full max-w-lg space-y-8">
@@ -25,6 +27,11 @@ export default async function DashboardPage() {
               Your referral dashboard
             </h1>
             <p className="mt-1 text-sm text-zinc-500">{user.email}</p>
+            {user.referrerEmail && (
+              <p className="mt-1 text-sm text-zinc-400">
+                Referred by <span className="text-zinc-600">{user.referrerEmail}</span>
+              </p>
+            )}
           </div>
           <SignOutButton />
         </div>
@@ -32,7 +39,7 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-3 gap-4">
           <Stat label="Invites sent" value={invitesSent} />
           <Stat label="Conversions" value={conversions} />
-          <Stat label="Conversion rate" value={`${(rate * 100).toFixed(0)}%`} />
+          <Stat label="Conversion rate" value={rateDisplay} />
         </div>
 
         <div className="rounded-xl border border-zinc-100 bg-white p-6 shadow-sm space-y-3">
