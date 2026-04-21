@@ -2,7 +2,12 @@ import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { PrismaClient } from "@/app/generated/prisma/client";
 
 function createPrismaClient() {
-  const adapter = new PrismaLibSql({ url: process.env.DATABASE_URL! });
+  const adapter = new PrismaLibSql({
+    url: process.env.DATABASE_URL!,
+    ...(process.env.DATABASE_AUTH_TOKEN && {
+      authToken: process.env.DATABASE_AUTH_TOKEN,
+    }),
+  });
   return new PrismaClient({ adapter });
 }
 
